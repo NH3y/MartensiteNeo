@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.gmail.orangeandy2007.martensite.martensiteneo.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "martensiteneo.refmap.json",
+  "mixins": [
+    "EntityTickMixin",
+    "ExperienceOrbMixin",
+    "LevelChunkMixin",
+    "LivingEntityTickMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
