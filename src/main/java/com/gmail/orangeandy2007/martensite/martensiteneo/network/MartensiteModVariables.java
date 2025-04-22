@@ -115,6 +115,9 @@ public class MartensiteModVariables {
                 }
                 BWriter.newLine();
             }
+            if(!encounter){
+                sectionData(BWriter, name, toPrint);
+            }
         }else{
             sectionData(BWriter,name,toPrint);
         }
