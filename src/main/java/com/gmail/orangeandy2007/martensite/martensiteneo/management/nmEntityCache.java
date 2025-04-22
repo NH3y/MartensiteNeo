@@ -15,5 +15,5 @@ public interface nmEntityCache {
 
     void martensiteNew$setNowCancel(boolean boo);
 
-    default boolean martensiteNew$getNowCancel() {return false;};
+    default boolean martensiteNew$getNowCancel() {return false;}
 }

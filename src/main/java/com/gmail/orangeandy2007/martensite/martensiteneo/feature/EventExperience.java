@@ -11,16 +11,17 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.nbt.CompoundTag;
 
 import java.util.List;
 import java.util.Comparator;
+
+import static com.gmail.orangeandy2007.martensite.martensiteneo.configuration.FeatureConfiguration.GrabExp;
 
 @EventBusSubscriber
 public class EventExperience {
 	@SubscribeEvent
 	public static void onPickupXP(PlayerXpEvent.PickupXp event) {
-		if (event != null) {
+		if (event != null && GrabExp.get()) {
             Entity entity = event.getEntity();
             execute(entity.level(), entity.getX(), entity.getY(), event.getEntity().getZ());
         }

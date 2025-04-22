@@ -8,7 +8,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 
 //import com.gmail.orangeandy2007.martensite.martensiteneo.configuration.StatueSettingConfiguration;
 import com.gmail.orangeandy2007.martensite.martensiteneo.configuration.ProtectZoneConfiguration;
-//import com.gmail.orangeandy2007.martensite.martensiteneo.configuration.FeatureConfiguration;
+import com.gmail.orangeandy2007.martensite.martensiteneo.configuration.FeatureConfiguration;
 import com.gmail.orangeandy2007.martensite.martensiteneo.Martensiteneo;
 
 @EventBusSubscriber(modid = Martensiteneo.MODID, bus = EventBusSubscriber.Bus.MOD)
@@ -16,5 +16,7 @@ public class MartensiteModConfigs {
 	@SubscribeEvent
 	public static void register(FMLConstructModEvent event) {
 		event.enqueueWork(() -> ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, ProtectZoneConfiguration.SPEC, "martensite-basic.toml"));
+		event.enqueueWork(() -> ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, FeatureConfiguration.SPEC, "martensite-feature.toml"));
+
 	}
 }

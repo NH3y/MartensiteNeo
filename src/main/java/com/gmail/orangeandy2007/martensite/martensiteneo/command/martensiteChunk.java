@@ -17,6 +17,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
+import java.util.Arrays;
+
 @EventBusSubscriber
 public class martensiteChunk {
 
@@ -25,8 +27,6 @@ public class martensiteChunk {
         event.getDispatcher().register(Commands.literal("martensite-chunk")
 
                 .then(Commands.literal("add").then(Commands.argument("name", StringArgumentType.word()).then(Commands.argument("Pos", BlockPosArgument.blockPos()).then(Commands.argument("Pos2", BlockPosArgument.blockPos()).executes(arguments -> {
-                    System.out.println("WoW Done!");
-
                     Level world = arguments.getSource().getUnsidedLevel();
                     Entity entity = arguments.getSource().getEntity();
                     if (entity == null && world instanceof ServerLevel _servLevel)
@@ -34,17 +34,17 @@ public class martensiteChunk {
                     String name = arguments.getArgument("name",String.class);
                     BlockPos initial = arguments.getArgument("Pos", WorldCoordinates.class).getBlockPos(arguments.getSource());
                     BlockPos end = arguments.getArgument("Pos2", WorldCoordinates.class).getBlockPos(arguments.getSource());
-                    int chunkX1 = world.getChunkAt(initial).getPos().x;
-                    int chunkZ1 = world.getChunkAt(initial).getPos().z;
-                    int chunkX2 = world.getChunkAt(end).getPos().x;
-                    int chunkZ2 = world.getChunkAt(end).getPos().z;
-                    System.out.println("Variable Done!");
-                    for(int i=chunkX1;i<=chunkX2;i++){
-                        for(int j=chunkZ1;j<=chunkZ2;j++){
+                    LevelChunk chunkA = world.getChunkAt(initial);
+                    LevelChunk chunkB = world.getChunkAt(end);
+
+                    int[] X = Arrays.stream(new int[]{chunkB.getPos().x,chunkA.getPos().x}).sorted().toArray();
+                    int[] Z = Arrays.stream(new int[]{chunkB.getPos().z,chunkA.getPos().z}).sorted().toArray();
+                    int i;
+                    int j;
+                    for(i = X[0]; i <= X[1]; i++){
+                        for(j = Z[0]; j <= Z[1]; j++){
                             int[] value = new int[]{i,j};
-                            System.out.println("Value Done!");
-                            ChunkRegister.addChunk(value, name + "_" + i + "_" + j, entity);
-                            System.out.println("Chunk Done!");
+                            ChunkRegister.addChunk(world,value, name + "_" + i + "_" + j, entity);
                         }
                     }
 
@@ -58,7 +58,7 @@ public class martensiteChunk {
 
                     LevelChunk chunk = world.getChunkAt(arguments.getArgument("Pos",WorldCoordinates.class).getBlockPos(arguments.getSource()));
                     String name = arguments.getArgument("name",String.class);
-                    ChunkRegister.addChunk(chunk,name,entity);
+                    ChunkRegister.addChunk(world,chunk,name,entity);
                     System.out.println("Chunk Done!");
 
                     return 0;
@@ -72,7 +72,7 @@ public class martensiteChunk {
                     String name = arguments.getArgument("name",String.class);
 
                     if (entity != null) {
-                        ChunkRegister.addChunk(entity, name);
+                        ChunkRegister.addChunk(world,entity, name);
                     }
                     System.out.println("Chunk Done!");
 
@@ -87,7 +87,7 @@ public class martensiteChunk {
 
                     String name = arguments.getArgument("name", String.class);
 
-                    ChunkRegister.rename(chunk, name, entity);
+                    ChunkRegister.rename(world, chunk, name, entity);
                     return 0;
                 })))).then(Commands.literal("remove").then(Commands.argument("Pos", BlockPosArgument.blockPos()).executes(arguments -> {
                     Level world = arguments.getSource().getUnsidedLevel();
@@ -98,7 +98,7 @@ public class martensiteChunk {
                     if (entity == null && world instanceof ServerLevel _servLevel)
                         entity = FakePlayerFactory.getMinecraft(_servLevel);
 
-                    ChunkRegister.remove(chunk,entity);
+                    ChunkRegister.remove(world, chunk,entity);
                     return 0;
                 }))).then(Commands.literal("clear").executes(arguments -> {
                     Level world = arguments.getSource().getUnsidedLevel();
@@ -107,7 +107,7 @@ public class martensiteChunk {
                     if (entity == null && world instanceof ServerLevel _servLevel)
                         entity = FakePlayerFactory.getMinecraft(_servLevel);
 
-                    ChunkRegister.clear(entity);
+                    ChunkRegister.clear(world, entity);
                     return 0;
                 })).then(Commands.literal("search").then(Commands.argument("name", StringArgumentType.word()).executes(arguments -> {
                     Level world = arguments.getSource().getUnsidedLevel();
@@ -118,7 +118,7 @@ public class martensiteChunk {
 
                     String name = arguments.getArgument("name",String.class);
 
-                    ChunkRegister.search(entity, name);
+                    ChunkRegister.search(world, entity, name);
                     return 0;
                 }))).then(Commands.literal("get").then(Commands.argument("Pos", BlockPosArgument.blockPos()).executes(arguments ->{
                     Level world = arguments.getSource().getUnsidedLevel();
@@ -127,8 +127,10 @@ public class martensiteChunk {
                     if (entity == null && world instanceof ServerLevel _servLevel)
                         entity = FakePlayerFactory.getMinecraft(_servLevel);
 
-                    LevelChunk chunk = world.getChunkAt(arguments.getArgument("Pos", WorldCoordinates.class).getBlockPos(arguments.getSource()));
-                    ChunkRegister.get(chunk, entity);
+                    if(world instanceof ServerLevel level ) {
+                        LevelChunk chunk = level.getChunkAt(arguments.getArgument("Pos", WorldCoordinates.class).getBlockPos(arguments.getSource()));
+                        ChunkRegister.get(chunk, entity);
+                    }
                     return 0;
                 }))));
     }

@@ -1,103 +1,122 @@
 package com.gmail.orangeandy2007.martensite.martensiteneo.management;
 
+import com.gmail.orangeandy2007.martensite.martensiteneo.feature.MessageTick;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
-import static com.gmail.orangeandy2007.martensite.martensiteneo.network.MartensiteModVariables.ChunkList;
-import static com.gmail.orangeandy2007.martensite.martensiteneo.network.MartensiteModVariables.update;
-
 public class ChunkRegister {
-    public static void addChunk(LevelChunk chunk, String name, Entity entity){
+    public static void addChunk(Level world, LevelChunk chunk, String name, Entity entity){
         int[] value = new int[]{chunk.getPos().x, chunk.getPos().z};
-        addChunk(value, name, entity);
+        addChunk(world, value, name, entity);
     }
-    public static void addChunk(Entity entity, String name){
+    public static void addChunk(Level world, Entity entity, String name){
         int[] value = new int[]{entity.chunkPosition().x,entity.chunkPosition().z};
-        addChunk(value, name, entity);
+        addChunk(world, value, name, entity);
     }
-    public static void addChunk(int[] value, String name, Entity entity){
-        if(ChunkList.containsValue(value) || ChunkList.containsKey(name)) return;
-        ChunkList.putIfAbsent(name, value);
+    public static void addChunk(Level world,int[] value, String name, Entity entity){
+
+        int[] check = ((levelData)world).martensiteNeo$addSafeChunk(name, value);
+        if (check != null && !Arrays.toString(check).equals(Arrays.toString(value))) {
+            System.out.println("Fail");
+            messageMaker(entity, "Chunk Nane Already Exist At", true);
+            messageMaker(entity,name,false);
+            return;
+        }
+        System.out.println("Success");
         messageMaker(entity, "Add Chunk!", true);
         messageMaker(entity,name,false);
         ((chunkData) entity.level().getChunk(value[0], value[1])).martensiteNeo$setSafeChunk(true);
-        update();
     }
-    public static void remove(LevelChunk chunk, Entity entity){
+    public static void remove(Level world, LevelChunk chunk, Entity entity){
         int[] value = new int[]{chunk.getPos().x, chunk.getPos().z};
         ArrayList<String> toRemove = new ArrayList<>();
-        System.out.println(ChunkList.containsValue(value));
-        for(Map.Entry<String, int[]> entry : ChunkList.entrySet()){
+        for(Map.Entry<String, int[]> entry : ((levelData)world).martensiteNeo$getSafeChunks().entrySet()){
             if(Arrays.equals(entry.getValue(), value)) {
                 toRemove.add(entry.getKey());
                 messageMaker(entity, "Found: " + entry.getKey(), true);
             }
         }
-        if(toRemove.isEmpty()) return;
+        if(toRemove.isEmpty()) {
+            messageMaker(entity, "Not Found", true);
+            return;
+        }
         for(String key : toRemove){
-            ChunkList.remove(key);
+            ((levelData) world).martensiteNeo$removeSafeChunk(key);
             messageMaker(entity, "Remove: " + key , true);
         }
         ((chunkData) chunk).martensiteNeo$setSafeChunk(false);
-        update();
     }
-    public static void rename(LevelChunk chunk, String name, Entity entity){
+    public static void rename(Level world, LevelChunk chunk, String name, Entity entity){
         int[] value = new int[]{chunk.getPos().x, chunk.getPos().z};
         ArrayList<String> toRename = new ArrayList<>();
-        for(Map.Entry<String, int[]> entry : ChunkList.entrySet()){
+        for(Map.Entry<String, int[]> entry : ((levelData)world).martensiteNeo$getSafeChunks().entrySet()){
             if(Arrays.equals(entry.getValue(), value)){
                 toRename.add(entry.getKey());
                 messageMaker(entity, "Found: " + entry.getKey(), true);
             }
         }
-        if(toRename.isEmpty()) return;
-        for(String key : toRename){
-            ChunkList.remove(key);
-            ChunkList.putIfAbsent(name, value);
+        if(toRename.isEmpty()) {
+            messageMaker(entity,"Not Found!", true);
+            return;
         }
-        update();
+        if(toRename.size() != 1){
+            messageMaker(entity, "Multiple Chunks were Found", true);
+            return;
+        }
+        for(String key : toRename){
+            ((levelData) world).martensiteNeo$removeSafeChunk(key);
+            ((levelData) world).martensiteNeo$addSafeChunk(name, value);
+            messageMaker(entity,key,false);
+        }
     }
-    public static void clear(Entity entity){
+    public static void clear(Level world,Entity entity){
         if(entity instanceof Player player && player.hasPermissions(4)){
-            System.out.println(player.getName() + "Clear The ChunkList!!!");
+            System.out.println(player.getName() + " Clear The ChunkList!!!");
             System.out.println("UUID: " + player.getUUID());
-            for(int[] value : ChunkList.values()){
+            for(int[] value : ((levelData)world).martensiteNeo$getSafeChunks().values()){
                 ((chunkData)entity.level().getChunk(value[0],value[1])).martensiteNeo$setSafeChunk(false);
             }
             messageMaker(entity, "Clear!", true);
-            ChunkList.clear();
+            ((levelData) world).martensiteNeo$setSafeChunks(new HashMap<>());
         }
-
-        update();
     }
-    public static void search(Entity entity, String key){
-        boolean encounter = false;
-        for(Map.Entry<String,int[]> entry : ChunkList.entrySet()){
-            if(entry.getKey().contains(key)){
-                messageMaker(entity, entry.getKey(), false);
-                encounter = true;
+    public static void search(Level world, Entity entity, String include) {
+        ArrayList<String> toSearch = new ArrayList<>();
+        for(String key : ((levelData)world).martensiteNeo$getSafeChunks().keySet()){
+            if(key.contains(include)){
+                toSearch.add(key +" = "+ Arrays.toString(((levelData) world).martensiteNeo$getSafeChunks().get(key)));
             }
         }
-        if(!encounter) messageMaker(entity,"Not Found!", true);
+        if(toSearch.isEmpty()) return;
+        if(entity instanceof Player player) {
+            if(MessageTick.running){
+                messageMaker(player,"Searching System is Busy",true);
+                return;
+            }
+            toSearch.add("Finish! " + toSearch.size() + " Chunks in total!");
+            MessageTick.sendMessage(toSearch, player);
+        }
     }
     public static void get(LevelChunk chunk, Entity entity){
         if(chunk instanceof chunkData AdChunk && AdChunk.martensiteNeo$getSafeChunk()){
             int[] value = new int[]{chunk.getPos().x,chunk.getPos().z};
             messageMaker(entity, "Found Register At : " + Arrays.toString(value), true);
         }else{
-            messageMaker(entity, "Not Found", true);
+            messageMaker(entity, "Not Found or Not Loaded", true);
         }
     }
     public static void messageMaker(Entity entity, String key, boolean literal){
         if(entity instanceof Player player) {
             if(!literal){
-                player.displayClientMessage(Component.literal(key + " : " + Arrays.toString(ChunkList.get(key))),false);
+                player.displayClientMessage(Component.literal(key + " : " + Arrays.toString(((levelData)entity.level()).martensiteNeo$getSafeChunks().get(key))),false);
             }else{
                 player.displayClientMessage(Component.literal(key),false);
             }
