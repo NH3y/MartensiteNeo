@@ -8,9 +8,10 @@ A performace mod aims at Minecraft entity optimizations
 ## Cautions
 1. Skip ticks will also slow down aging and moving
 2. fast experience absorb will cause the value of orbs to varying at a small error
-And due to the problem above, there some solution other than waiting for update
-First, there is a chunk register system you can access through command **martensite-chunk** which allows you to mark certain chunks with a name
-The chuncks that have been marked will be excluded to the skip system, and thus won't be afffected
+
+And due to the problem above, there some solution other than waiting for update. 
+First, there is a chunk register system you can access through command **martensite-chunk** which allows you to mark certain chunks with a name.
+The chuncks that have been marked will be excluded to the skip system, and thus won't be afffected.
 
 **Be careful! Marking Chunks will NOT Forceload them**
 
