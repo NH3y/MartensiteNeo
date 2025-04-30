@@ -1,5 +1,6 @@
 package com.gmail.orangeandy2007.martensite.martensiteneo.network;
 
+import com.gmail.orangeandy2007.martensite.martensiteneo.feature.EventUnload;
 import com.gmail.orangeandy2007.martensite.martensiteneo.management.levelData;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.storage.ServerLevelData;
@@ -8,6 +9,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.LevelEvent.Load;
 import net.neoforged.neoforge.event.level.LevelEvent.Unload;
 import net.neoforged.neoforge.event.level.LevelEvent.Save;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.*;
@@ -21,10 +23,11 @@ public class MartensiteModVariables {
         System.out.println("Load");
 
         LevelAccessor level = event.getLevel();
-        if(level.getLevelData() instanceof ServerLevelData data && level instanceof levelData) {
-            ((levelData) level).martensiteNeo$setSafeChunks(read(data.getLevelName() + level.dimensionType().effectsLocation().getPath()));
-            ((levelData) level).martensiteNeo$refreshChunks();
+        if(level.getLevelData() instanceof ServerLevelData data && level instanceof levelData levelData) {
+            levelData.martensiteNeo$setSafeChunks(read(data.getLevelName() + level.dimensionType().effectsLocation().getPath()));
+            levelData.martensiteNeo$refreshChunks();
         }
+        EventUnload.CloseDetect();
     }
     @SubscribeEvent
     public static void onLevelUnload(Unload event) throws IOException {
@@ -68,18 +71,10 @@ public class MartensiteModVariables {
             if(dataSet.length == 0){
                 return map;
             }
-            String[] Pos;
-            String set;
             for(String each : dataSet){
-                if(!each.contains("=")) continue;
-                Pos = each.split("=")[1].split(",");
-                if(Pos.length == 0) continue;
-                int[] Value = new int[]{
-                        Integer.parseInt(Pos[0].replace("[","").trim()),
-                        Integer.parseInt(Pos[1].replace("]","").trim())
-                };
-                set = each.split("=")[0].replace("[","");
-                map.put(set,Value);
+                Map.Entry<String,int[]> entry = dataFormat(each);
+                if(entry == null) continue;
+                map.put(entry.getKey(),entry.getValue());
             }
         }
         return map;
@@ -121,12 +116,9 @@ public class MartensiteModVariables {
         }else{
             sectionData(BWriter,name,toPrint);
         }
-        if(!encounter){
-            sectionData(BWriter, name, toPrint);
-        }
         BWriter.flush();
     }
-    public static void sectionData(BufferedWriter BWriter, String name, ArrayList<String> toPrint) throws IOException {
+    public static void sectionData(BufferedWriter BWriter, String name, List<String> toPrint) throws IOException {
         int times = 0;
         BWriter.write(name + "? [");
         if(toPrint.isEmpty()){
@@ -142,5 +134,16 @@ public class MartensiteModVariables {
                 BWriter.write(name + "? [");
             }
         }
+    }
+    private static Map.Entry<String,int[]> dataFormat(String line){
+        if(!line.contains("=")) return null;
+        @NotNull String[] Pos = line.split("=")[1].split(",");
+        if(Pos.length == 0) return null;
+        int[] value = new int[]{
+                Integer.parseInt(Pos[0].replace("[","").trim()),
+                Integer.parseInt(Pos[1].replace("]","").trim())
+        };
+        String name = line.split("=")[0].replace("[","");
+        return Map.entry(name,value);
     }
 }
