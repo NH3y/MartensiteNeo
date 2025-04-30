@@ -9,9 +9,11 @@
     "ExperienceOrbMixin",
     "LevelChunkMixin",
     "LevelMixin",
-    "LivingEntityTickMixin"
+    "LivingEntityTickMixin",
+    "StrollGoalMixin"
   ],
   "client": [
+    "ItemRenderStateMixin"
   ],
   "injectors": {
     "defaultRequire": 1
