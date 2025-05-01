@@ -2,6 +2,7 @@ package com.gmail.orangeandy2007.martensite.martensiteneo.network;
 
 import com.gmail.orangeandy2007.martensite.martensiteneo.feature.EventUnload;
 import com.gmail.orangeandy2007.martensite.martensiteneo.management.levelData;
+import com.mojang.logging.LogUtils;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -13,14 +14,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.*;
+import org.slf4j.Logger;
 import java.util.stream.Stream;
 
 @EventBusSubscriber
 public class MartensiteModVariables {
+    private static final Logger logger = LogUtils.getLogger();
+
     @SubscribeEvent
     public static void onLevelLoad(Load event) throws IOException {
         if(event.getLevel().isClientSide()){return;}
-        System.out.println("Load");
+        logger.info("Loading");
 
         LevelAccessor level = event.getLevel();
         if(level.getLevelData() instanceof ServerLevelData data && level instanceof levelData levelData) {
@@ -33,7 +37,7 @@ public class MartensiteModVariables {
     public static void onLevelUnload(Unload event) throws IOException {
         if(event.getLevel().isClientSide()){return;}
 
-        System.out.println("Unload");
+        logger.info("Unloading");
 
         LevelAccessor level = event.getLevel();
         if(level.getLevelData() instanceof ServerLevelData data && level instanceof levelData){
@@ -44,7 +48,7 @@ public class MartensiteModVariables {
     public static void onLevelSave(Save event) throws IOException {
         if(event.getLevel().isClientSide()){return;}
 
-        System.out.println("Save");
+        logger.info("Saving");
         LevelAccessor level = event.getLevel();
         if(level.getLevelData() instanceof ServerLevelData data && level instanceof levelData) {
             save(data.getLevelName() + level.dimensionType().effectsLocation().getPath(), ((levelData) level).martensiteNeo$getSafeChunks());
