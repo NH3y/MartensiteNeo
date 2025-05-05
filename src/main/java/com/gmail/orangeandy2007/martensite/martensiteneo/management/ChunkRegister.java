@@ -1,5 +1,6 @@
 package com.gmail.orangeandy2007.martensite.martensiteneo.management;
 
+import com.gmail.orangeandy2007.martensite.martensiteneo.classes.MessageCache;
 import com.gmail.orangeandy2007.martensite.martensiteneo.feature.MessageTick;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -95,13 +96,12 @@ public class ChunkRegister {
                 toSearch.add(key +" = "+ Arrays.toString(((levelData) world).martensiteNeo$getSafeChunks().get(key)));
             }
         }
-        if(toSearch.isEmpty()) return;
         if(entity instanceof Player player) {
+            toSearch.add("Finish! " + toSearch.size() + " Chunks in total!");
             if(MessageTick.running){
                 messageMaker(player,"Searching System is Busy",true);
-                return;
+                messageMaker(player,"Please Wait",true);
             }
-            toSearch.add("Finish! " + toSearch.size() + " Chunks in total!");
             MessageTick.sendMessage(toSearch, player);
         }
     }

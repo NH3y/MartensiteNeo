@@ -97,28 +97,35 @@ public class MartensiteModVariables {
         }
         FileWriter fileWriter = new FileWriter(file);
         BufferedWriter BWriter = new BufferedWriter(fileWriter);
-        boolean encounter = false;
         ArrayList<String> toPrint = new ArrayList<>();
         for(Map.Entry<String,int[]> entry :  data.entrySet()){
             toPrint.add(entry.getKey() + "=" + Arrays.toString(entry.getValue()));
         }
-        if (lines != null) {
-            for(String line : lines){
-                if(line.contains(name)){
-                    if(!encounter) {
-                        encounter = true;
-                        sectionData(BWriter,name,toPrint);
-                    }
-                }else{
-                    BWriter.write(line);
-                }
+        if (lines == null) {
+            sectionData(BWriter, name, toPrint);
+            BWriter.flush();
+            return;
+        }
+        if(lines.stream().noneMatch(line -> line.contains(name))){
+            for (String line : lines) {
+                BWriter.write(line);
                 BWriter.newLine();
             }
-            if(!encounter){
-                sectionData(BWriter, name, toPrint);
+            sectionData(BWriter, name, toPrint);
+            BWriter.flush();
+            return;
+        }
+        boolean encounter = false;
+        for (String line : lines) {
+            if (line.contains(name)) {
+                if (!encounter) {
+                    encounter = true;
+                    sectionData(BWriter, name, toPrint);
+                }
+            } else {
+                BWriter.write(line);
             }
-        }else{
-            sectionData(BWriter,name,toPrint);
+            BWriter.newLine();
         }
         BWriter.flush();
     }
