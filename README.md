@@ -1,17 +1,17 @@
 # Martensite Entity Skipper - Neoforge version
-A performace mod aims at Minecraft entity optimizations
+A performance mod aims at Minecraft entity optimizations
 ## Features
 1. Enhanced version of nearestPlayer to get the nearest player to the certain entity
 2. Cancel entity tick event according to the distance form entity to player
 3. Cramp experience orb entity together to reduce entity count
-4. An additional experience orb optimization to aborb them as fast as possible
+4. An additional experience orb optimization to absorb them as fast as possible
 ## Cautions
 1. Skip ticks will also slow down aging and moving
 2. fast experience absorb will cause the value of orbs to varying at a small error
 
 And due to the problem above, there some solution other than waiting for update. 
 First, there is a chunk register system you can access through command **martensite-chunk** which allows you to mark certain chunks with a name.
-The chuncks that have been marked will be excluded to the skip system, and thus won't be afffected.
+The chunks that have been marked will be excluded to the skip system, and thus won't be affected.
 
 **Be careful! Marking Chunks will NOT Forceload them**
 

@@ -7,13 +7,16 @@
   "mixins": [
     "EntityTickMixin",
     "ExperienceOrbMixin",
-    "LevelChunkMixin",
-    "LevelMixin",
     "LivingEntityTickMixin",
-    "StrollGoalMixin"
+    "StrollGoalMixin",
+    "manager.LevelChunkMixin",
+    "manager.LevelMixin"
   ],
   "client": [
-    "ItemRenderStateMixin"
+    "ItemRenderStateMixin",
+    "manager.ChatComponentMixin",
+    "sound.LibraryMixin",
+    "sound.SoundEngineMixin"
   ],
   "injectors": {
     "defaultRequire": 1

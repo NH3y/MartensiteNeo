@@ -1,4 +1,4 @@
-package com.gmail.orangeandy2007.martensite.martensiteneo.mixin;
+package com.gmail.orangeandy2007.martensite.martensiteneo.mixin.manager;
 
 import com.gmail.orangeandy2007.martensite.martensiteneo.management.chunkData;
 import com.gmail.orangeandy2007.martensite.martensiteneo.management.levelData;
