@@ -1,7 +1,7 @@
 package com.gmail.orangeandy2007.martensite.martensiteneo.network;
 
 import com.gmail.orangeandy2007.martensite.martensiteneo.feature.EventUnload;
-import com.gmail.orangeandy2007.martensite.martensiteneo.management.levelData;
+import com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces.levelData;
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.storage.ServerLevelData;
@@ -14,6 +14,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.*;
+
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 import org.slf4j.Logger;
 import java.util.stream.Stream;
 
@@ -22,10 +25,10 @@ public class MartensiteModVariables {
     private static final Logger logger = LogUtils.getLogger();
 
     @SubscribeEvent
-    public static void onLevelLoad(Load event) throws IOException {
+    public static void onLevelLoad(@NotNull Load event) throws IOException {
         if(event.getLevel().isClientSide()){return;}
-        logger.info("Loading");
 
+        logger.info("Loading");
         LevelAccessor level = event.getLevel();
         if(level.getLevelData() instanceof ServerLevelData data && level instanceof levelData levelData) {
             levelData.martensiteNeo$setSafeChunks(read(data.getLevelName() + level.dimensionType().effectsLocation().getPath()));
@@ -34,18 +37,17 @@ public class MartensiteModVariables {
         EventUnload.CloseDetect();
     }
     @SubscribeEvent
-    public static void onLevelUnload(Unload event) throws IOException {
+    public static void onLevelUnload(@NotNull Unload event) throws IOException {
         if(event.getLevel().isClientSide()){return;}
 
         logger.info("Unloading");
-
         LevelAccessor level = event.getLevel();
         if(level.getLevelData() instanceof ServerLevelData data && level instanceof levelData){
             save(data.getLevelName() + level.dimensionType().effectsLocation().getPath(),((levelData) level).martensiteNeo$getSafeChunks());
         }
     }
     @SubscribeEvent
-    public static void onLevelSave(Save event) throws IOException {
+    public static void onLevelSave(@NotNull Save event) throws IOException {
         if(event.getLevel().isClientSide()){return;}
 
         logger.info("Saving");
@@ -129,7 +131,7 @@ public class MartensiteModVariables {
         }
         BWriter.flush();
     }
-    public static void sectionData(BufferedWriter BWriter, String name, List<String> toPrint) throws IOException {
+    public static void sectionData(@NotNull BufferedWriter BWriter, String name, @NotNull List<String> toPrint) throws IOException {
         int times = 0;
         BWriter.write(name + "? [");
         if(toPrint.isEmpty()){
@@ -146,7 +148,7 @@ public class MartensiteModVariables {
             }
         }
     }
-    private static Map.Entry<String,int[]> dataFormat(String line){
+    private static Map.@Nullable @Unmodifiable Entry<String,int[]> dataFormat(@NotNull String line){
         if(!line.contains("=")) return null;
         @NotNull String[] Pos = line.split("=")[1].split(",");
         if(Pos.length == 0) return null;

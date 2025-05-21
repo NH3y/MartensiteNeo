@@ -1,12 +1,13 @@
 package com.gmail.orangeandy2007.martensite.martensiteneo.mixin;
 
 import com.gmail.orangeandy2007.martensite.martensiteneo.classes.BufferedExperienceOrb;
-import com.gmail.orangeandy2007.martensite.martensiteneo.management.experienceData;
+import com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces.experienceData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -48,36 +49,36 @@ public abstract class ExperienceOrbMixin extends Entity implements experienceDat
         }
     }
     @Inject(method = "playerTouch", at = @At("HEAD"))
-    public void playerTouch(Player entity, CallbackInfo ci){
+    public void playerTouch(@NotNull Player entity, CallbackInfo ci){
         entity.takeXpDelay = 0;
     }
 
     @Inject(method = "getExperienceValue", at = @At("HEAD"), cancellable = true)
-    private static void getExperienceValue(int expValue, CallbackInfoReturnable<Integer> cir) {
+    private static void getExperienceValue(int expValue, @NotNull CallbackInfoReturnable<Integer> cir) {
         cir.setReturnValue(expValue);
     }
 
 
 
-    @Inject(method = "merge", at = @At("HEAD"))
-    private void merge(ExperienceOrb orb, CallbackInfo ci){
-        if(this.value != orb.value){
+    @Inject(method = "merge", at = @At("HEAD"), cancellable = true)
+    private void merge(@NotNull ExperienceOrb orb, CallbackInfo ci){
+        if(this.value != orb.value && orb instanceof experienceData AccessibleOrb){
             int buffer;
-            buffer = this.count > ((experienceData)orb).martensiteNeo$getCount() ? this.value : orb.value;
-            buffer *= Math.abs(this.count - ((experienceData)orb).martensiteNeo$getCount());
+            buffer = this.count > AccessibleOrb.martensiteNeo$getCount() ? this.value : orb.value;
+            buffer *= Math.abs(this.count - AccessibleOrb.martensiteNeo$getCount());
             this.level().addFreshEntity(new BufferedExperienceOrb(
                     this.level(),
                     this.getX(),
                     this.getY(),
                     this.getZ(),
                     this.value + orb.value,
-                    Math.min(this.count,((experienceData)orb).martensiteNeo$getCount()),
+                    Math.min(this.count, AccessibleOrb.martensiteNeo$getCount()),
                     buffer
             ));
 
             orb.discard();
             this.discard();
-            return;
+            ci.cancel();
         }
     }
 }

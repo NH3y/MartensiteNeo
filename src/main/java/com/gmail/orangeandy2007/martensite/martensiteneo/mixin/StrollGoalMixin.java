@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import com.gmail.orangeandy2007.martensite.martensiteneo.management.nmEntityCache;
+import com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces.nmEntityCache;
 
 @Mixin(RandomStrollGoal.class)
 public abstract class StrollGoalMixin extends Goal {

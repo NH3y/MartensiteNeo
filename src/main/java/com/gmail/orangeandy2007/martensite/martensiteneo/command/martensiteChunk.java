@@ -16,6 +16,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -23,7 +24,7 @@ import java.util.Arrays;
 public class martensiteChunk {
 
     @SubscribeEvent
-    public static void registerCommand(RegisterCommandsEvent event) {
+    public static void registerCommand(@NotNull RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("martensite-chunk")
 
                 .then(Commands.literal("add").then(Commands.argument("name", StringArgumentType.word()).then(Commands.argument("Pos", BlockPosArgument.blockPos()).then(Commands.argument("Pos2", BlockPosArgument.blockPos()).executes(arguments -> {

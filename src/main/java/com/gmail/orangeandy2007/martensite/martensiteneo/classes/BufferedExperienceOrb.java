@@ -46,7 +46,6 @@ public class BufferedExperienceOrb extends ExperienceOrb {
 
             --this.count;
             if (this.count == 0) {
-                System.out.println(buffer);
                 entity.giveExperiencePoints(buffer);
 
                 this.discard();

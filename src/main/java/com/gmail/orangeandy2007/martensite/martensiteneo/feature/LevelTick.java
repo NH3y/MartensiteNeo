@@ -1,16 +1,17 @@
 package com.gmail.orangeandy2007.martensite.martensiteneo.feature;
 
-import com.gmail.orangeandy2007.martensite.martensiteneo.management.chunkData;
-import com.gmail.orangeandy2007.martensite.martensiteneo.management.levelData;
+import com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces.chunkData;
+import com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces.levelData;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.ChunkEvent.Load;
+import org.jetbrains.annotations.NotNull;
 
 @EventBusSubscriber
 public class LevelTick {
     @SubscribeEvent
-    public static void onChunkLoad(Load event){
+    public static void onChunkLoad(@NotNull Load event){
         boolean boo = event.getLevel() instanceof levelData AdLevel && AdLevel.martensiteNeo$getChunks().contains(event.getChunk());
         ((chunkData)event.getChunk()).martensiteNeo$setSafeChunk(boo);
     }

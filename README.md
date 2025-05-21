@@ -17,6 +17,5 @@ The chunks that have been marked will be excluded to the skip system, and thus w
 
 As for the fast absorb feature, currently don't have a solution, is close on default
 ## Future Feature
-1. Group Unload from other Martensite version
-2. AI optimizations as a less aggressive alternative to skipping ticks
-3. More specific entity optimizations
+1. AI optimizations as a less aggressive alternative to skipping ticks
+2. More specific entity optimizations
