@@ -1,7 +1,7 @@
 package com.gmail.orangeandy2007.martensite.martensiteneo.mixin;
 
 import com.gmail.orangeandy2007.martensite.martensiteneo.configuration.ProtectZoneConfiguration;
-import com.gmail.orangeandy2007.martensite.martensiteneo.management.nmEntityCache;
+import com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces.nmEntityCache;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;

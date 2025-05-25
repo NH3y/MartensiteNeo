@@ -1,11 +1,12 @@
-package com.gmail.orangeandy2007.martensite.martensiteneo.mixin;
+package com.gmail.orangeandy2007.martensite.martensiteneo.mixin.manager;
 
-import com.gmail.orangeandy2007.martensite.martensiteneo.management.chunkData;
-import com.gmail.orangeandy2007.martensite.martensiteneo.management.levelData;
+import com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces.chunkData;
+import com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces.levelData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -26,7 +27,7 @@ public abstract class LevelMixin implements levelData {
     public Map<String,int[]> martensiteNeo$ChunksList = new HashMap<>();
 
     @Override
-    public void martensiteNeo$setSafeChunks(Map<String, int[]> input) {
+    public void martensiteNeo$setSafeChunks(@NotNull Map<String, int[]> input) {
         this.martensiteNeo$safeChunks.clear();
         this.martensiteNeo$ChunksList.clear();
 

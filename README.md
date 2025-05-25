@@ -1,5 +1,5 @@
 # Martensite Entity Skipper - Neoforge version
-A performace mod aims at Minecraft entity optimizations
+A performance mod aims at Minecraft entity optimizations
 ## Features
 1. Enhanced version of nearestPlayer to get the nearest player to the certain entity
 2. Cancel entity tick event according to the distance form entity to player
@@ -27,5 +27,5 @@ The chuncks that have been marked will be excluded to the skip system and group 
 As for the fast absorb feature, currently don't have a solution, is close on default.
 Also this feature might soon become unnecessary due to the cramping advancement
 ## Future Feature
-2. AI optimizations as a less aggressive alternative to skipping ticks
-3. More specific entity optimizations
+1. AI optimizations as a less aggressive alternative to skipping ticks
+2. More specific entity optimizations

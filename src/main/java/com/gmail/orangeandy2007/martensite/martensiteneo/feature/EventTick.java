@@ -1,7 +1,7 @@
 package com.gmail.orangeandy2007.martensite.martensiteneo.feature;
 
-import com.gmail.orangeandy2007.martensite.martensiteneo.management.chunkData;
-import com.gmail.orangeandy2007.martensite.martensiteneo.management.nmEntityCache;
+import com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces.chunkData;
+import com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces.nmEntityCache;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.bus.api.Event;
@@ -14,13 +14,14 @@ import net.minecraft.world.entity.Entity;
 import com.gmail.orangeandy2007.martensite.martensiteneo.management.ClaudePlayerDetect;
 
 import com.gmail.orangeandy2007.martensite.martensiteneo.configuration.ProtectZoneConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
 @EventBusSubscriber
 public class EventTick{
 	@SubscribeEvent
-	public static void onEntityTick(Pre event) {
+	public static void onEntityTick(@NotNull Pre event) {
 		if (!event.getEntity().level().isClientSide()) {
 			boolean boo = execute(event, event.getEntity().level(), event.getEntity());
 			event.setCanceled(boo);

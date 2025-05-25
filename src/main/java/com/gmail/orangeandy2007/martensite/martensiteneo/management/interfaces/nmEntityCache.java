@@ -1,4 +1,4 @@
-package com.gmail.orangeandy2007.martensite.martensiteneo.management;
+package com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces;
 
 import net.minecraft.world.entity.player.Player;
 

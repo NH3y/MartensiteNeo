@@ -1,6 +1,6 @@
-package com.gmail.orangeandy2007.martensite.martensiteneo.mixin;
+package com.gmail.orangeandy2007.martensite.martensiteneo.mixin.manager;
 
-import com.gmail.orangeandy2007.martensite.martensiteneo.management.chunkData;
+import com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces.chunkData;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;

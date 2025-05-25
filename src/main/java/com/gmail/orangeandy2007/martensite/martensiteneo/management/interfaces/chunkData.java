@@ -1,4 +1,4 @@
-package com.gmail.orangeandy2007.martensite.martensiteneo.management;
+package com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces;
 
 public interface chunkData {
     default boolean martensiteNeo$getSafeChunk(){return false;}
