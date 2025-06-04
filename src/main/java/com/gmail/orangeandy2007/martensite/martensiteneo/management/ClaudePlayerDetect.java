@@ -17,13 +17,13 @@ public class ClaudePlayerDetect {
         if (entity instanceof nmEntityCache) {
             BlockPos entityPos = entity.blockPosition();
             Player player = ((nmEntityCache) entity).martensiteNew$getCacheNearestPlayer();
+            int index = -1;
 
             // 2. 利用緩存
             // 只每5刻更新一次最近玩家，或首次計算時
             if ((world.getLevelData().getGameTime() + entity.getId()) % 5 == 0 || player == null) {
                 double closestDistSq = 16384;
                 Player closestPlayer = null;
-                int index = -1;
 
                 // 4. 快速過濾 - 如果玩家在不同維度則跳過
                 List<Player> qualify = world.players().stream().filter(eachPlayer -> (eachPlayer.level() == entity.level() && !eachPlayer.isSpectator())).collect(Collectors.toUnmodifiableList());
@@ -56,6 +56,10 @@ public class ClaudePlayerDetect {
     }
 
     private static double length(Vec3i vec3i) {
-        return vec3i.getX() * vec3i.getX() + vec3i.getY() * vec3i.getY() + vec3i.getZ() * vec3i.getZ();
+        return length(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+    }
+
+    private static double length(int x, int y, int z){
+        return x*x + y*y + z*z;
     }
 }

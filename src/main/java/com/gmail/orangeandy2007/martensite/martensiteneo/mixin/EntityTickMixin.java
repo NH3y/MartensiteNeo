@@ -69,6 +69,7 @@ public abstract class EntityTickMixin implements nmEntityCache {
             }
         }
     }
+
     @Inject(method = "push*", at = @At("HEAD"), cancellable = true)
     public void push(CallbackInfo ci) {
         double Distance = martensiteNew$getCacheNearestPlayerDisSq();

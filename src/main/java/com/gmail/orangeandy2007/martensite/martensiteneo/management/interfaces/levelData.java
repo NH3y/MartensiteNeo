@@ -1,5 +1,8 @@
 package com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces;
 
+import com.gmail.orangeandy2007.martensite.martensiteneo.classes.PlayerDistanceManager;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.chunk.LevelChunk;
 
 import java.util.HashMap;
@@ -19,4 +22,12 @@ public interface levelData {
     default Map<String,int[]> martensiteNeo$getSafeChunks(){return new HashMap<>();}
 
     default Set<LevelChunk> martensiteNeo$getChunks(){return new HashSet<>();}
+
+    void martensiteNeo$refreshPosMap();
+
+    default Set<Map.Entry<Player, BlockPos>> martensiteNeo$getPosMap(){
+        return null;
+    }
+
+    default PlayerDistanceManager martensiteNeo$getDistanceManager(){return new PlayerDistanceManager(20, null);}
 }

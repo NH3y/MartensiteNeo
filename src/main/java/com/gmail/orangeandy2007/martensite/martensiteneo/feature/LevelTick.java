@@ -6,6 +6,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.ChunkEvent.Load;
+import net.neoforged.neoforge.event.tick.LevelTickEvent.Post;
 import org.jetbrains.annotations.NotNull;
 
 @EventBusSubscriber
@@ -14,6 +15,13 @@ public class LevelTick {
     public static void onChunkLoad(@NotNull Load event){
         boolean boo = event.getLevel() instanceof levelData AdLevel && AdLevel.martensiteNeo$getChunks().contains(event.getChunk());
         ((chunkData)event.getChunk()).martensiteNeo$setSafeChunk(boo);
+    }
+
+    @SubscribeEvent
+    public static void tick(Post event){
+        if (event.getLevel().getGameTime() % 5 == 0 && event.getLevel() instanceof levelData data){
+            data.martensiteNeo$refreshPosMap();
+        }
     }
 
     @Override
