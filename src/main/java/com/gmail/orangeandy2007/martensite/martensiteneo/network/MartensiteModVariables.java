@@ -73,6 +73,8 @@ public class MartensiteModVariables {
         }
         if(qualify.isEmpty()) return map;
         for(String data : qualify){
+            int gap = data.length() - data.lastIndexOf("?") - 4;
+            if (gap <= 0) continue;
             String[] dataSet = data.substring(data.lastIndexOf("?")+2,data.length()-2).split(">");
             if(dataSet.length == 0){
                 return map;
@@ -86,6 +88,9 @@ public class MartensiteModVariables {
         return map;
     }
     public static void save(String name, Map<String,int[]> data) throws IOException {
+        if (data == null) {
+            return;
+        }
         File file = new File("ChunkList.data");
         List<String> lines = null;
 
@@ -145,6 +150,9 @@ public class MartensiteModVariables {
                 BWriter.write("]");
                 BWriter.newLine();
                 BWriter.write(name + "? [");
+                if (toPrint.size() % 100 == 0) {
+                    BWriter.write("]");
+                }
             }
         }
     }
