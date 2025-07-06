@@ -74,7 +74,9 @@ public class MartensiteModVariables {
         if(qualify.isEmpty()) return map;
         for(String data : qualify){
             int gap = data.length() - data.lastIndexOf("?") - 4;
-            if (gap <= 0) continue;
+            if (gap <= 0) {
+                continue;
+            }
             String[] dataSet = data.substring(data.lastIndexOf("?")+2,data.length()-2).split(">");
             if(dataSet.length == 0){
                 return map;

@@ -14,9 +14,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PlayerDistanceManager {
-    Set<Map.Entry<Player, BlockPos>> PosMap = null;
-    int searchCount;
-    LevelAccessor world;
+    private Set<Map.Entry<Player, BlockPos>> PosMap = null;
+    private final int searchCount;
+    private final LevelAccessor world;
 
     public PlayerDistanceManager(int count, LevelAccessor level){
         this.searchCount = count;
@@ -40,8 +40,11 @@ public class PlayerDistanceManager {
 
     public double find(Entity entity) {
         if (world instanceof levelData data) {
-            if (data.martensiteNeo$getPosMap() == null) return 128;
+            if (data.martensiteNeo$getPosMap() == null) {
+                return 128;
+            }
             Vec3i vec3i = entity.blockPosition();
+
             this.PosMap = data.martensiteNeo$getPosMap().stream()
                     .map(entry -> (Map.entry(entry.getKey(), entry.getValue().offset(vec3i.multiply(-1))))).collect(Collectors.toSet());
 
