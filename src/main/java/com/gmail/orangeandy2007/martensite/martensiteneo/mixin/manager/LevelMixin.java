@@ -5,16 +5,23 @@ import com.gmail.orangeandy2007.martensite.martensiteneo.configuration.ProtectZo
 import com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces.chunkData;
 import com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces.levelData;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.storage.WritableLevelData;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -35,10 +42,11 @@ public abstract class LevelMixin implements levelData {
     private Map<Player, BlockPos> martensiteNeo$PositionMap = new HashMap<>();
 
     @Unique
-    public PlayerDistanceManager martensiteNeo$distanceManager = new PlayerDistanceManager(ProtectZoneConfiguration.RANDOM_LOOP.get(), (LevelAccessor) this);
+    private PlayerDistanceManager martensiteNeo$distanceManager;
+
     @Override
     public void martensiteNeo$setSafeChunks(@NotNull Map<String, int[]> input) {
-        if (this.martensiteNeo$safeChunks == null || this.martensiteNeo$safeChunks.isEmpty()) {
+        if (this.martensiteNeo$safeChunks == null) {
             return;
         }
         this.martensiteNeo$safeChunks.clear();
@@ -63,12 +71,12 @@ public abstract class LevelMixin implements levelData {
 
     @Override
     public Map<String,int[]> martensiteNeo$getSafeChunks(){
-        return this.martensiteNeo$ChunksList == null ? new HashMap<>() : this.martensiteNeo$ChunksList;
+        return this.martensiteNeo$ChunksList;
     }
 
     @Override
     public Set<LevelChunk> martensiteNeo$getChunks() {
-        return this.martensiteNeo$safeChunks == null ? new HashSet<>() : this.martensiteNeo$safeChunks;
+        return this.martensiteNeo$safeChunks;
     }
 
     @Override
@@ -89,7 +97,7 @@ public abstract class LevelMixin implements levelData {
 
     @Override
     public void martensiteNeo$refreshPosMap() {
-        if (this.martensiteNeo$PositionMap == null || this.martensiteNeo$PositionMap.isEmpty()) {
+        if (this.martensiteNeo$PositionMap == null) {
             return;
         }
         this.martensiteNeo$PositionMap.clear();
@@ -102,11 +110,16 @@ public abstract class LevelMixin implements levelData {
 
     @Override
     public Set<Map.Entry<Player, BlockPos>> martensiteNeo$getPosMap() {
-        return this.martensiteNeo$PositionMap == null ? new HashSet<>() : this.martensiteNeo$PositionMap.entrySet();
+        return this.martensiteNeo$PositionMap.entrySet();
     }
 
     @Override
     public PlayerDistanceManager martensiteNeo$getDistanceManager() {
         return this.martensiteNeo$distanceManager;
+    }
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    public void Level(WritableLevelData levelData, ResourceKey dimension, RegistryAccess registryAccess, Holder dimensionTypeRegistration, boolean isClientSide, boolean isDebug, long biomeZoomSeed, int maxChainedNeighborUpdates, CallbackInfo ci){
+        this.martensiteNeo$distanceManager = new PlayerDistanceManager(ProtectZoneConfiguration.RANDOM_LOOP.get(), (LevelAccessor) this);
     }
 }

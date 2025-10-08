@@ -13,19 +13,26 @@ import net.neoforged.neoforge.event.level.LevelEvent.Save;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import org.slf4j.Logger;
+
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @EventBusSubscriber
 public class MartensiteModVariables {
     private static final Logger logger = LogUtils.getLogger();
+    private static final ArrayList<String> lines = new ArrayList<>();
+    public static long lastReadTime = 0;
 
     @SubscribeEvent
-    public static void onLevelLoad(@NotNull Load event) throws IOException {
+    public static void onLevelLoad(@NotNull Load event) {
         if(event.getLevel().isClientSide()){return;}
 
         logger.info("Loading");
@@ -42,8 +49,8 @@ public class MartensiteModVariables {
 
         logger.info("Unloading");
         LevelAccessor level = event.getLevel();
-        if(level.getLevelData() instanceof ServerLevelData data && level instanceof levelData){
-            save(data.getLevelName() + level.dimensionType().effectsLocation().getPath(),((levelData) level).martensiteNeo$getSafeChunks());
+        if(level.getLevelData() instanceof ServerLevelData data && level instanceof levelData levelData){
+            save(data.getLevelName() + level.dimensionType().effectsLocation().getPath(),levelData.martensiteNeo$getSafeChunks());
         }
     }
     @SubscribeEvent
@@ -55,26 +62,46 @@ public class MartensiteModVariables {
         if(level.getLevelData() instanceof ServerLevelData data && level instanceof levelData) {
             save(data.getLevelName() + level.dimensionType().effectsLocation().getPath(), ((levelData) level).martensiteNeo$getSafeChunks());
         }
+
+        lastReadTime = 0;
     }
-	public static Map<String,int[]> read(String name) throws IOException {
-        Map<String,int[]> map = new HashMap<>();
+
+    private static void readAndStore() throws FileNotFoundException {
         File file = new File("ChunkList.data");
-        if(!file.exists() || !file.canRead() || file.length() == 0) return map;
+        if(!file.exists() || !file.canRead() || file.length() == 0) return;
         FileReader reader = new FileReader(file);
 
-        List<String> qualify;
+        List<String> allLine;
         try (BufferedReader BReader = new BufferedReader(reader)){
             Stream<String> lines = BReader.lines()
-                    .filter(line -> line.contains("?"))
-                    .filter(line -> line.contains(name));
-            qualify = new ArrayList<>(lines.toList());
+                    .filter(line -> line.contains("?"));
+            allLine = new ArrayList<>(lines.toList());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        if(qualify.isEmpty()) return map;
-        for(String data : qualify){
+        if(allLine.isEmpty()) return;
+        lines.clear();
+        lines.addAll(allLine);
+        lastReadTime = System.currentTimeMillis();
+    }
+
+	public static Map<String,int[]> read(String name) {
+        Map<String,int[]> map = new HashMap<>();
+        long time = System.currentTimeMillis();
+        if (time - lastReadTime > 300000 || lastReadTime == 0) {
+            try {
+                readAndStore();
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (lines.isEmpty()) return map;
+        Set<String> qualified = lines.stream().filter(line -> line.contains(name)).collect(Collectors.toSet());
+        for(String data : qualified){
             int gap = data.length() - data.lastIndexOf("?") - 4;
-            if (gap <= 0) continue;
+            if (gap <= 0) {
+                continue;
+            }
             String[] dataSet = data.substring(data.lastIndexOf("?")+2,data.length()-2).split(">");
             if(dataSet.length == 0){
                 return map;
@@ -94,7 +121,7 @@ public class MartensiteModVariables {
         File file = new File("ChunkList.data");
         List<String> lines = null;
 
-        if(file.exists()&&file.canRead()&&file.length() != 0) {
+        if(file.exists() && file.canRead() && file.length() != 0) {
             FileReader fileReader = new FileReader(file);
             try (BufferedReader BReader = new BufferedReader(fileReader)) {
                 lines = new ArrayList<>(BReader.lines().filter(line -> line.contains("?")).toList());

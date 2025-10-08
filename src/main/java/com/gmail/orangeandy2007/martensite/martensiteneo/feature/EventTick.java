@@ -35,7 +35,6 @@ public class EventTick{
 		if (entity instanceof Entity) {
 			LevelChunk nowChunk = entity.level().getChunkAt(entity.blockPosition());
 			double Distance = ProtectZoneConfiguration.RANDOM_SEARCH.get() ? ((levelData)world).martensiteNeo$getDistanceManager().find(entity) : ClaudePlayerDetect.execute(world, entity);
-
 			double Config = ProtectZoneConfiguration.RADIUS.get();
 			if(Distance <= Config) return false;
 			if (!((chunkData) nowChunk).martensiteNeo$getSafeChunk()) {

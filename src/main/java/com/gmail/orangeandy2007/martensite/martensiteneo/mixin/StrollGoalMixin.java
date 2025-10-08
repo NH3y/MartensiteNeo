@@ -22,6 +22,5 @@ public abstract class StrollGoalMixin extends Goal {
         if(((nmEntityCache)this.mob).martensiteNew$getCacheNearestPlayerDisSq() >= ProtectZoneConfiguration.RADIUS.get()){
             cir.setReturnValue(false);
         }
-        cir.setReturnValue(false);
     }
 }

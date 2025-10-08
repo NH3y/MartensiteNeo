@@ -1,5 +1,6 @@
 package com.gmail.orangeandy2007.martensite.martensiteneo.management;
 
+import com.gmail.orangeandy2007.martensite.martensiteneo.configuration.ProtectZoneConfiguration;
 import com.gmail.orangeandy2007.martensite.martensiteneo.feature.MessageTick;
 import com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces.chunkData;
 import com.gmail.orangeandy2007.martensite.martensiteneo.management.interfaces.levelData;
@@ -25,11 +26,14 @@ public class ChunkRegister {
 
     public static void addChunk(Level world, @NotNull Entity entity, String name) {
         int[] value = new int[]{entity.chunkPosition().x, entity.chunkPosition().z};
-        addChunk(world, value, name, entity);
+        if (ProtectZoneConfiguration.ALWAYS_APPEND.get()) {
+            addChunk(world, value, name + "_" + value[0] + "_" + value[1], entity);
+        } else {
+            addChunk(world, value, name, entity);
+        }
     }
 
     public static void addChunk(Level world, int[] value, String name, Entity entity) {
-
         int[] check = ((levelData) world).martensiteNeo$addSafeChunk(name, value);
         if (check != null && !Arrays.toString(check).equals(Arrays.toString(value))) {
             logger.warn("Chunk Register Fail (repeat_chunk)");
@@ -40,27 +44,37 @@ public class ChunkRegister {
         logger.info("Chunk Register Success");
         messageMaker(entity, "Add Chunk!", true);
         messageMaker(entity, name, false);
-        ((chunkData) entity.level().getChunk(value[0], value[1])).martensiteNeo$setSafeChunk(true);
+        ((chunkData) world.getChunk(value[0], value[1])).martensiteNeo$setSafeChunk(true);
+    }
+
+    public static void remove(Level world, Entity entity) {
+        int[] value = new int[]{entity.chunkPosition().x, entity.chunkPosition().z};
+        remove(world, value, entity);
     }
 
     public static void remove(Level world, @NotNull LevelChunk chunk, Entity entity) {
         int[] value = new int[]{chunk.getPos().x, chunk.getPos().z};
+        remove(world, value, entity);
+    }
+
+    public static void remove(Level world, int[] value, Entity entity) {
         ArrayList<String> toRemove = new ArrayList<>();
-        for (Map.Entry<String, int[]> entry : ((levelData) world).martensiteNeo$getSafeChunks().entrySet()) {
+        levelData levelData = (levelData) world;
+        for (Map.Entry<String, int[]> entry : levelData.martensiteNeo$getSafeChunks().entrySet()) {
             if (Arrays.equals(entry.getValue(), value)) {
                 toRemove.add(entry.getKey());
                 messageMaker(entity, "Found: " + entry.getKey(), true);
             }
         }
         if (toRemove.isEmpty()) {
-            messageMaker(entity, "Not Found", true);
+            messageMaker(entity, "Not Found at " + Arrays.toString(value), true);
             return;
         }
         for (String key : toRemove) {
-            ((levelData) world).martensiteNeo$removeSafeChunk(key);
+            levelData.martensiteNeo$removeSafeChunk(key);
             messageMaker(entity, "Remove: " + key, true);
         }
-        ((chunkData) chunk).martensiteNeo$setSafeChunk(false);
+        ((chunkData) world.getChunk(value[0], value[1])).martensiteNeo$setSafeChunk(false);
     }
 
     public static void rename(Level world, @NotNull LevelChunk chunk, String name, Entity entity) {
@@ -87,16 +101,38 @@ public class ChunkRegister {
         }
     }
 
-    public static void clear(Level world, Entity entity) {
+    private static final Map<String, Map<String, int[]>> backups = new HashMap<>();
+    public static int clear(Level world, Entity entity) {
         if (entity instanceof Player player && player.hasPermissions(4)) {
+            Map<String, int[]> computed = backups.computeIfAbsent(world.dimensionType().effectsLocation().getPath(), m -> new HashMap<>());
+            computed.clear();
+            computed.putAll(((levelData) world).martensiteNeo$getSafeChunks());
+
             logger.warn("{} Clear The ChunkList!!!", player.getName());
             logger.warn("UUID: {}", player.getUUID());
+            int counter = 0;
             for (int[] value : ((levelData) world).martensiteNeo$getSafeChunks().values()) {
                 ((chunkData) entity.level().getChunk(value[0], value[1])).martensiteNeo$setSafeChunk(false);
+                counter++;
             }
             messageMaker(entity, "Clear!", true);
             ((levelData) world).martensiteNeo$setSafeChunks(new HashMap<>());
+            return counter;
         }
+        return 0;
+    }
+
+    public static int revive(Level world, Entity entity) {
+        Map<String, int[]> stringMap = backups.getOrDefault(world.dimensionType().effectsLocation().getPath(), null);
+        if (stringMap == null) {
+            messageMaker(entity, "No backup has been found", true);
+            return 0;
+        }
+        ((levelData) world).martensiteNeo$setSafeChunks(stringMap);
+        int size = stringMap.size();
+        backups.remove(world.dimensionType().effectsLocation().getPath());
+        messageMaker(entity, "The chunk list has been revive through backup", true);
+        return size;
     }
 
     public static void search(Level world, Entity entity, @NotNull String include) {
