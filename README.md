@@ -4,11 +4,11 @@ A performance mod aims at Minecraft entity optimizations
 1. Enhanced version of nearestPlayer to get the nearest player to the certain entity
 2. Cancel entity tick event according to the distance form entity to player
 3. Cramp experience orb entity together to reduce entity count
-4. An additional experience orb optimization to absorb them as fast as possible
+4. An additional experience orb optimization to aborb them as fast as possible
 5. Reduce item layers to avoid unnecessary item rendering
 6. Increasing expected value of despawn rate for a group of closing entity, also known as Group Unload
 ## Partial Reason
-1. getting the distance from nearest player is an important function used to calculate the cancel rate of entity tick. If the calculations cost too many resources, the mod will be useless
+1. getting the distance from nearest player is an important function used to calculate the cancel rate of entity tick. If the calculations cost too much resources, the mod will be useless
 2. Player won't be able to see most entities far away unless they stand on the high ground with a high view distance
 3. Experience orbs separated once their value didn't match any of the prescribed value which only enhance visual effect
 4. Just an additional feature helps a little
@@ -20,7 +20,7 @@ A performance mod aims at Minecraft entity optimizations
 
 And due to the problem above, there some solution other than waiting for update. 
 First, there is a chunk register system you can access through command **martensite-chunk** which allows you to mark certain chunks with a name.
-The chunks that have been marked will be excluded to the skip system and group unload mechanism, and thus won't be affected.
+The chunks that have been marked will be excluded to the skip system and group unload mechanism, and thus won't be afffected.
 
 **Be careful! Marking Chunks will NOT Forceload them**
 
