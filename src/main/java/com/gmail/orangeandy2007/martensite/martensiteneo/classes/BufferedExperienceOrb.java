@@ -59,6 +59,7 @@ public class BufferedExperienceOrb extends ExperienceOrb {
             this.buffer -= this.value;
         }
     }
+
     private int repairPlayerItems(ServerPlayer player, int value) {
         Optional<EnchantedItemInUse> optional = EnchantmentHelper.getRandomItemWith(EnchantmentEffectComponents.REPAIR_WITH_XP, player, ItemStack::isDamaged);
         if (optional.isPresent()) {
